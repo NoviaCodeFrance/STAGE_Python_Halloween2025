@@ -9,7 +9,8 @@ maison = {
         "description": "Tu es dans le hall sombre et poussiéreux. Un grand escalier en bois monte vers le nord et une porte massive se trouve au sud (elle est fermée à clé derrière toi).",
         "sorties": {
             "nord": "Grand Escalier"
-        }
+        },
+        "objets": ["araignée en sucre"]
     },
     "Grand Escalier": {
         "description": "Un escalier monumental qui craque sous tes pieds. Il monte vers le premier étage et descend vers le hall. Des portes se trouvent à l'est et à l'ouest.",
@@ -18,27 +19,31 @@ maison = {
             "est": "Salon", 
             "ouest": "Salle à manger", 
             "haut": "Couloir de l'étage"
-        }
+        },
+        "objets": []
     },
     "Salon": {
         "description": "Tu es dans un grand salon. Les meubles sont recouverts de draps blancs. Une cheminée éteinte est pleine de suie. Une porte est à l'ouest et une autre, plus petite, est à l'est.",
         "sorties": {
             "ouest": "Grand Escalier",
             "est": "Bibliothèque"
-        }
+        },
+        "objets": ["nougat", "vieille clé"]
     },
     "Bibliothèque": {
         "description": "Des milliers de livres aux reliures abîmées remplissent les étagères du sol au plafond. Une odeur de vieux papier flotte dans l'air.",
         "sorties": {
             "ouest": "Salon"
-        }
+        },
+        "objets": ["lettre moisie"]
     },
     "Salle à manger": {
         "description": "Une longue table en bois est dressée pour un repas qui n'a jamais eu lieu. La vaisselle est couverte de poussière. Il y a une porte à l'est et une autre au nord.",
         "sorties": {
             "est": "Grand Escalier",
             "nord": "Cuisine"
-        }
+        },
+        "objets": ["caramel"]
     },
     "Cuisine": {
         "description": "La cuisine est en désordre. Une porte mène au sud, une trappe est dans le sol et une porte vitrée pleine de buée donne sur l'est.",
@@ -46,13 +51,15 @@ maison = {
             "sud": "Salle à manger",
             "bas": "Cave",
             "est": "Jardin"
-        }
+        },
+        "objets": ["couteau de cuisine"]
     },
     "Jardin": {
         "description": "Un jardin laissé à l'abandon. Des ronces grimpent sur une vieille statue de pierre. La seule entrée semble être la porte de la cuisine à l'ouest.",
         "sorties": {
             "ouest": "Cuisine"
-        }
+        },
+        "objets": ["citrouille", "chocolat"]
     },
     
     # --- Sous-sol ---
@@ -60,7 +67,8 @@ maison = {
         "description": "Une cave froide et humide. L'air sent la terre et le vin tourné. Des tonneaux sont alignés contre les murs.",
         "sorties": {
             "haut": "Cuisine"
-        }
+        },
+        "objets": ["bouteille vide"]
     },
     
     # --- Premier étage ---
@@ -72,25 +80,29 @@ maison = {
             "est": "Chambre d'enfant",
             "ouest": "Salle de bain",
             "haut": "Grenier"
-        }
+        },
+        "objets": []
     },
     "Chambre principale": {
         "description": "Une grande chambre avec un lit à baldaquin recouvert de toiles d'araignées. La fenêtre est brisée et laisse entrer un vent glacial.",
         "sorties": {
             "sud": "Couloir de l'étage"
-    }
+        },
+        "objets": ["sucette", "boîte à musique"]
     },
     "Chambre d'enfant": {
         "description": "Une petite chambre avec un cheval à bascule qui grince tout seul dans un coin. Des jouets cassés jonchent le sol.",
         "sorties": {
             "ouest": "Couloir de l'étage"
-        }
+        },
+        "objets": ["ours en peluche"]
     },
     "Salle de bain": {
         "description": "Le miroir au-dessus du lavabo est fêlé. De l'eau goutte lentement d'un robinet rouillé, créant le seul bruit ambiant.",
         "sorties": {
             "est": "Couloir de l'étage"
-        }
+        },
+        "objets": ["peigne en argent"]
     },
 
     # --- Grenier ---
@@ -98,7 +110,8 @@ maison = {
         "description": "Un grenier étouffant rempli de vieux meubles recouverts de draps. Une petite lucarne laisse passer un rayon de lune. Une échelle descend vers le sud.",
         "sorties": {
             "sud": "Couloir de l'étage"
-        }
+        },
+        "objets": ["bonbon au citron", "vieux journal"]
     }
 }
 
@@ -116,6 +129,12 @@ def pieceActuelle():
     print("\n-----------------")
     print("Tu es dans:", positionJoueur)
     print(piece["description"])
+
+    print("\n")
+    objets = piece["objets"]
+    if objets:
+        print("Tu vois ici:", ", ".join(objets))
+        print("\n")
 
     sorties = piece["sorties"].keys()
     print("Sorties possibles:", ", ".join(sorties))
@@ -149,11 +168,24 @@ while not partieTerminee:
                 print("Tu ne peux pas aller là !")
         else:
             print("Tu dois dire où tu veux aller (ex: nord, sud, est, ouest, haut, bas).")
-
-
+    elif commande == "prendre":
+        objet = " ".join(mots[1:])
+        if objet in maison[positionJoueur]["objets"]:
+            inventaire.append(objet)
+            maison[positionJoueur]["objets"].remove(objet)
+            print("Tu as pris:", objet)
+        else:
+            print("Cet objet n'est pas ici !")
+    elif commande == "inventaire":
+        if inventaire:
+            print("Ton inventaire contient:", ", ".join(inventaire))
+        else:
+            print("Ton inventaire est vide.")
     elif commande == "aide":
         print("--- COMMANDES POSSIBLES ---")
         print("- aller [direction] : pour te déplacer (nord, sud, est, ouest, haut, bas).")
+        print("- prendre [objet] : prendre un objet dans la pièce.")
+        print("- inventaire : pour regarder ton inventaire.")
         print("- aide : pour afficher la liste des commandes.")
         print("- quitter : pour arrêter le jeu.")
         print("----------------------------")
