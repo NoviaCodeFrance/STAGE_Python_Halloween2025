@@ -1,7 +1,23 @@
+import random
+
 # VARIABLES DU JEU
 positionJoueur = "Hall d'entrée"
+positionFantome = "Cave"
 inventaire = []
 partieTerminee = False
+peurJoueur = 0
+bonbonsGagnes = 0
+
+LISTE_BONBONS = ["araignée en sucre", "nougat", "caramel", "chocolat", "sucette", "bonbon au citron"]
+
+COULEURS = {
+    "titre": "\033[95m",       # Rose/Violet
+    "description": "\033[93m", # Jaune
+    "objet": "\033[92m",       # Vert
+    "sortie": "\033[94m",      # Bleu
+    "danger": "\033[91m",      # Rouge
+    "fin": "\033[0m"           # Remet la couleur par défaut
+}
 
 maison = {
     # --- Rez-de-chaussée ---
@@ -127,7 +143,7 @@ print("Ravi de te rencontrer", pseudo, "!")
 def pieceActuelle():
     piece = maison[positionJoueur]
     print("\n-----------------")
-    print("Tu es dans:", positionJoueur)
+    print(f"Tu es dans: {COULEURS['titre']}{positionJoueur}{COULEURS['fin']}")
     print(piece["description"])
 
     print("\n")
@@ -136,9 +152,26 @@ def pieceActuelle():
         print("Tu vois ici:", ", ".join(objets))
         print("\n")
 
-    sorties = piece["sorties"].keys()
-    print("Sorties possibles:", ", ".join(sorties))
+    print("Sorties possibles:")
+    for direction, destination in piece["sorties"].items():
+        print(f"- {direction} -> {COULEURS['sortie']}{destination}{COULEURS['fin']}")
     print("\n-----------------\n")
+
+def tourDuFantome():
+    global positionFantome, positionJoueur, partieTerminee, peurJoueur
+    sortiesFantome = list(maison[positionFantome]["sorties"].values())
+    positionFantome = random.choice(sortiesFantome)
+
+    if positionFantome == positionJoueur:
+        peurJoueur += 1
+        print("\nBOO ! 👻 Le fantôme te traverse ! Ton corps se glace de peur.")
+
+        if peurJoueur >= 3:
+            print("GAME OVER")
+            print("La peur a eu raison de toi. Tu t'effondres, incapable de continuer...")
+            partieTerminee = True
+        else:
+            print(f"Niveau de peur: {peurJoueur}/3. Fais attention !")
 
 pieceActuelle()
 
@@ -164,6 +197,7 @@ while not partieTerminee:
             if direction in maison[positionJoueur]["sorties"]:
                 positionJoueur = maison[positionJoueur]["sorties"][direction]
                 pieceActuelle()
+                tourDuFantome()
             else:
                 print("Tu ne peux pas aller là !")
         else:
@@ -174,6 +208,14 @@ while not partieTerminee:
             inventaire.append(objet)
             maison[positionJoueur]["objets"].remove(objet)
             print("Tu as pris:", objet)
+
+            if objet in LISTE_BONBONS:
+                bonbonsGagnes += 1
+                print(f"C'est un bonbon ! Tu en as maintenant {bonbonsGagnes}/5.")
+                if bonbonsGagnes >= 5:
+                   print(f"\n🏆 FÉLICITATIONS, {pseudo} !") 
+                   print("Tu as collecté assez de bonbons et tu t'échappes de la maison hantée !")
+                   partieTerminee = True
         else:
             print("Cet objet n'est pas ici !")
     elif commande == "inventaire":
