@@ -158,7 +158,7 @@ def pieceActuelle():
     print("\n-----------------\n")
 
 def tourDuFantome():
-    global positionFantome, positionJoueur, partieTerminee, peurJoueur
+    global positionFantome, partieTerminee, peurJoueur
     sortiesFantome = list(maison[positionFantome]["sorties"].values())
     positionFantome = random.choice(sortiesFantome)
 
